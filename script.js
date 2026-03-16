@@ -74,3 +74,48 @@ document.addEventListener('DOMContentLoaded', () => {
         animateOnScroll.observe(el);
     });
 });
+
+// --- PDF Modal Logic ---
+
+// Function to open the modal and set the iframe src
+window.openPdfModal = function (pdfUrl) {
+    const modal = document.getElementById('pdfModal');
+    const iframe = document.getElementById('pdfFrame');
+
+    // Append #toolbar=0&navpanes=0&scrollbar=0 to hide download controls
+    // Note: PDF viewers in browsers handle this differently, but this works for most modern browsers
+    const secureUrl = pdfUrl + '#toolbar=0&navpanes=0&scrollbar=0';
+
+    iframe.src = secureUrl;
+    modal.classList.add('active');
+
+    // Prevent scrolling on the body while modal is open
+    document.body.style.overflow = 'hidden';
+};
+
+// Function to close the modal
+window.closePdfModal = function () {
+    const modal = document.getElementById('pdfModal');
+    const iframe = document.getElementById('pdfFrame');
+
+    modal.classList.remove('active');
+    // Clear src so the PDF stops rendering/loading in background
+    setTimeout(() => {
+        iframe.src = '';
+    }, 300); // Wait for transition to finish
+
+    // Restore scrolling
+    document.body.style.overflow = 'auto';
+};
+
+// Close modal when clicking completely outside the modal content
+document.getElementById('pdfModal').addEventListener('click', function (event) {
+    if (event.target === this) {
+        closePdfModal();
+    }
+});
+
+// Prevent right-click inside the modal area to disable "Save Page As" or inspecting
+document.querySelector('.pdf-container').addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+});
